@@ -3,8 +3,6 @@ package com.mccarty.marc.readspeed;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,10 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import java.util.Timer;
-
 public class MainActivity extends Activity implements View.OnClickListener
 {
+    double elapsedTime = 0;
+    double startTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -45,8 +44,7 @@ public class MainActivity extends Activity implements View.OnClickListener
         Button finishedButton = findViewById(R.id.finished_button);
         TextView paragraph = findViewById(R.id.paragraph);
 
-        long elapsedTime = 0;
-        long startTime = 0;
+
 
         if (v != null)
         {
@@ -75,13 +73,16 @@ public class MainActivity extends Activity implements View.OnClickListener
                 //Present WPM to user
 
                 elapsedTime = System.currentTimeMillis() - startTime;
-                int wordCount = 12;
+                elapsedTime /= 60000;
+
+
+                double wordCount = 12;
 
                 paragraph.setVisibility(View.GONE);
 
                 Context context = getApplicationContext();
-                CharSequence text = "WPM: " + (wordCount / ((elapsedTime / 1000)  / 60));
                 int duration = Toast.LENGTH_SHORT;
+                CharSequence text = "WPM: " + (int)(wordCount / elapsedTime);
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
