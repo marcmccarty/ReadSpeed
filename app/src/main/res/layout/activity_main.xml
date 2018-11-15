@@ -17,7 +17,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"></Toolbar>
+        app:layout_constraintVertical_bias="0.0">
+
+    </Toolbar>
 
     <Button
         android:id="@+id/begin_button"
@@ -51,8 +53,10 @@
 
     <TextView
         android:id="@+id/paragraph"
-        android:layout_width="385dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/fake_para"
         android:textSize="18sp"
