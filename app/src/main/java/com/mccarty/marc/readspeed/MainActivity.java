@@ -2,10 +2,14 @@ package com.mccarty.marc.readspeed;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +25,8 @@ import java.util.StringTokenizer;
 
 public class MainActivity extends Activity implements View.OnClickListener
 {
+    private static final String PREFS_NAME = "prefs";
+    private static final String PREF_DARK_THEME = "dark_theme";
     double elapsedTime = 0;
     double startTime = 0;
 
@@ -35,8 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener
 
                 Document doc = Jsoup.connect(urls[0]).get();
                 Element p = doc.select("p").first();
-                String text = p.text();
-                return text;
+                return p.text();
             }
             catch (IOException e)
             {
@@ -56,6 +61,14 @@ public class MainActivity extends Activity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
+
+        if(useDarkTheme)
+        {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -69,8 +82,6 @@ public class MainActivity extends Activity implements View.OnClickListener
         TextView paragraph = findViewById(R.id.paragraph);
         paragraph.setVisibility(View.GONE);
 
-        //paragraph.setText("This will eventually be text grabbed from a Wikipedia article.\nFor now you should enjoy the fact that this app works at all.");
-
         beginButton.setBackgroundColor(Color.rgb(255,128,0));
         finishedButton.setBackgroundColor(Color.GRAY);
 
@@ -80,13 +91,36 @@ public class MainActivity extends Activity implements View.OnClickListener
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                this.startActivity(intent);
+                break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
+    }
+
+    @Override
     public void onClick(View v)
     {
         Button beginButton = findViewById(R.id.begin_button);
         Button finishedButton = findViewById(R.id.finished_button);
         TextView paragraph = findViewById(R.id.paragraph);
-
-
 
         if (v != null)
         {
