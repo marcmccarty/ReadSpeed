@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,14 +22,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class MainActivity extends Activity implements View.OnClickListener
 {
+    // Save Theme Selection
     private static final String PREFS_NAME = "prefs";
     private static final String PREF_DARK_THEME = "dark_theme";
+    // Timer for WPM
     double elapsedTime = 0;
     double startTime = 0;
+    // Scores
+    ArrayList<String> scores = new ArrayList<>();
 
     class ParsePageTask extends AsyncTask<String, Void, String>
     {
@@ -157,9 +164,12 @@ public class MainActivity extends Activity implements View.OnClickListener
 
                 paragraph.setVisibility(View.GONE);
 
+                int wpmScore = (int)(wordCount / elapsedTime);
+
                 Context context = getApplicationContext();
                 int duration = Toast.LENGTH_LONG;
-                CharSequence text = "Your reading speed is: " + (int)(wordCount / elapsedTime) + " WPM";
+                CharSequence text = "Your reading speed is: " + wpmScore + " WPM";
+                scores.add("" + wpmScore);
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
