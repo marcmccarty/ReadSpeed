@@ -14,6 +14,7 @@ import android.widget.Toolbar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -33,7 +34,8 @@ public class MainActivity extends Activity implements View.OnClickListener
                 StrictMode.setThreadPolicy(policy);
 
                 Document doc = Jsoup.connect(urls[0]).get();
-                String text = doc.body().text();
+                Element p = doc.select("p").first();
+                String text = p.text();
                 return text;
             }
             catch (IOException e)
@@ -62,7 +64,7 @@ public class MainActivity extends Activity implements View.OnClickListener
         Button beginButton = findViewById(R.id.begin_button);
         Button finishedButton = findViewById(R.id.finished_button);
 
-        new ParsePageTask().execute("http://isup.me");
+        new ParsePageTask().execute("https://en.wikipedia.org/wiki/Main_Page");
 
         TextView paragraph = findViewById(R.id.paragraph);
         paragraph.setVisibility(View.GONE);
