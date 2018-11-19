@@ -8,6 +8,7 @@ When you press "Begin", it shows you text from a website (specifically the "Arti
 When you press "Finished", your reading speed is presented to you.
 
 The three dots in the top right/on the toolbar serve as the Options Menu.
+
 Settings currently holds the Dark Theme switcher.
 Scores shows stored scores that do persist through app opening/closing. You can clear your stored scores here.
 
