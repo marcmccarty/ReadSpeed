@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,13 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.gson.Gson;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class MainActivity extends Activity implements View.OnClickListener
@@ -34,8 +36,10 @@ public class MainActivity extends Activity implements View.OnClickListener
     // Timer for WPM
     double elapsedTime = 0;
     double startTime = 0;
-    // Scores
-    ArrayList<String> scores = new ArrayList<>();
+    // Scores - May rewrite where this is stored in ScoresActivity and Main can reference
+    static ArrayList<String> scores = new ArrayList<>();
+    // Saved preferences
+    SharedPreferences preferences;
 
     class ParsePageTask extends AsyncTask<String, Void, String>
     {
@@ -46,6 +50,7 @@ public class MainActivity extends Activity implements View.OnClickListener
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
 
+                //Grabs the first paragraph on the page
                 Document doc = Jsoup.connect(urls[0]).get();
                 Element p = doc.select("p").first();
                 return p.text();
@@ -60,21 +65,55 @@ public class MainActivity extends Activity implements View.OnClickListener
 
         protected void onPostExecute(String result)
         {
-            // process results
             ((TextView) findViewById(R.id.paragraph)).setText(result);
         }
+    }
+
+    static ArrayList<String> getScores()
+    {
+        return scores;
+    }
+
+    static void clearScores()
+    {
+        scores.clear();
+    }
+
+    int averageScore()
+    {
+        int totalScore = 0;
+
+        for (int i = 0; i < scores.size(); i++)
+        {
+            totalScore += Integer.parseInt(scores.get(i));
+        }
+
+        return (totalScore / scores.size());
+    }
+
+    void scoresLoad(String[] text)
+    {
+        MainActivity.getScores().addAll(Arrays.asList(text));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
         if(useDarkTheme)
         {
             setTheme(R.style.AppTheme_Dark);
         }
+
+        // Clear score array, in case returning from another activity
+        scores.clear();
+        // Do load from preferences, though, and store them back in the array, for data manipulation
+        Gson gson = new Gson();
+        String jsonText = preferences.getString("key", null);
+        String[] text = gson.fromJson(jsonText, String[].class);
+        scoresLoad(text);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -87,14 +126,30 @@ public class MainActivity extends Activity implements View.OnClickListener
         new ParsePageTask().execute("https://en.wikipedia.org/wiki/Main_Page");
 
         TextView paragraph = findViewById(R.id.paragraph);
+        // Hide paragraph before "Begin" is pressed, for accurate measurement
         paragraph.setVisibility(View.GONE);
 
+        // Preparing enabled/disabled Begin/Finished buttons, color-wise
         beginButton.setBackgroundColor(Color.rgb(255,128,0));
         finishedButton.setBackgroundColor(Color.GRAY);
 
         beginButton.setOnClickListener(MainActivity.this);
         finishedButton.setOnClickListener(MainActivity.this);
         finishedButton.setEnabled(false);
+
+
+        // Most Recent Score and Average Score Notice
+        // TODO: Change to a function
+        // TODO: Add switch in settings to turn this option off
+        // Potentially make appear as TextView before hitting "Begin" instead of Toast
+        if (scores.size() > 0)
+        {
+            Context context = getApplicationContext();
+            int duration = Toast.LENGTH_LONG;
+            CharSequence text2 = "Your most recent score was: " + scores.get(scores.size()-1) + " WPM" + "\nYour average score is: " + averageScore() + " WPM";
+            Toast toast = Toast.makeText(context, text2, duration);
+            toast.show();
+        }
     }
 
     @Override
@@ -110,9 +165,14 @@ public class MainActivity extends Activity implements View.OnClickListener
     {
         switch(item.getItemId())
         {
+            case R.id.scores:
+                Intent scoresIntent = new Intent(this, ScoresActivity.class);
+                this.startActivity(scoresIntent);
+                break;
+
             case R.id.settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                this.startActivity(intent);
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                this.startActivity(settingsIntent);
                 break;
 
             default:
@@ -136,9 +196,9 @@ public class MainActivity extends Activity implements View.OnClickListener
             if(id == R.id.begin_button)
             {
                 finishedButton.setBackgroundColor(Color.rgb(255,128,0));
-                //Show paragraph(s)
-                //Start timer
 
+                //Show paragraph
+                //Start timer
                 paragraph.setVisibility(View.VISIBLE);
 
                 elapsedTime = 0;
@@ -151,10 +211,10 @@ public class MainActivity extends Activity implements View.OnClickListener
             else if(id == R.id.finished_button) //&&beginFlag
             {
                 beginButton.setBackgroundColor(Color.rgb(255,128,0));
-                //Stop timer
-                //Hide paragraph -- maybe
-                //Present WPM to user
 
+                //Stop timer
+                //Hide paragraph
+                //Present WPM to user
                 elapsedTime = System.currentTimeMillis() - startTime;
                 elapsedTime /= 60000;
 
@@ -170,6 +230,15 @@ public class MainActivity extends Activity implements View.OnClickListener
                 int duration = Toast.LENGTH_LONG;
                 CharSequence text = "Your reading speed is: " + wpmScore + " WPM";
                 scores.add("" + wpmScore);
+
+                // May make into function, if possible.
+                // Stores the score for future app uses.
+                SharedPreferences.Editor prefEdit = preferences.edit();
+                Gson gson = new Gson();
+                List<String> textList = scores;
+                String jsonText = gson.toJson(textList);
+                prefEdit.putString("key", jsonText);
+                prefEdit.apply();
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();

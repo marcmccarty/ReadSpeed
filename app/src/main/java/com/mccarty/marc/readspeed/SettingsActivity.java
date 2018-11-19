@@ -60,7 +60,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener
     {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-        super.onBackPressed();  // optional depending on your needs
+        super.onBackPressed();
     }
 
     @Override

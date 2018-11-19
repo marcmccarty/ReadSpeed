@@ -5,4 +5,6 @@
     <string name="settings">Settings</string>
     <string name="scores">Scores</string>
     <string name="theme_switch">Dark Theme</string>
+    <string name="scores_list_string">Scores List</string>
+    <string name="clear_scores">Clear Scores</string>
 </resources>
