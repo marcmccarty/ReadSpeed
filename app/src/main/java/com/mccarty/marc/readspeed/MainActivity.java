@@ -113,7 +113,10 @@ public class MainActivity extends Activity implements View.OnClickListener
         Gson gson = new Gson();
         String jsonText = preferences.getString("key", null);
         String[] text = gson.fromJson(jsonText, String[].class);
-        scoresLoad(text);
+        if (text != null)
+        {
+            scoresLoad(text);
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
