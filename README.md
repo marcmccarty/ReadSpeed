@@ -9,7 +9,8 @@ When you press "Finished", your reading speed is presented to you.
 
 The three dots in the top right/on the toolbar serve as the Options Menu.
 
-Settings currently holds the Dark Theme switcher.
-Scores shows stored scores that do persist through app opening/closing. You can clear your stored scores here.
+<b>Settings</b> currently holds the Dark Theme switcher.
+
+<b>Scores</b> shows stored scores that do persist through app opening/closing. You can clear your stored scores here.
 
 Some future versions will ideally allow selective score tracking, user-input paragraphs for reading speed tests, etc.
