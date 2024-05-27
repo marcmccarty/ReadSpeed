@@ -1,6 +1,6 @@
 # ReadSpeed
 
-ReadSpeed is a basic app that records your reading speed.
+ReadSpeed is an app that records your reading speed.
 
 When the app begins, if you have any stored scores, it will display your most recent score and your average score.
 
@@ -13,4 +13,4 @@ The three dots in the top right/on the toolbar serve as the Options Menu.
 
 <b>Scores</b> shows stored scores that do persist through app opening/closing. You can clear your stored scores here.
 
-Some future versions will ideally allow selective score tracking, user-input paragraphs for reading speed tests, etc.
+Some future versions will allow selective score tracking, user-input paragraphs for reading speed tests, etc.
