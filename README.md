@@ -1,6 +1,6 @@
 # ReadSpeed
 
-ReadSpeed is an app that records your reading speed.
+ReadSpeed is an Android app that records your reading speed.
 
 When the app begins, if you have any stored scores, it will display your most recent score and your average score.
 
